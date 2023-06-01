@@ -1,9 +1,7 @@
-import json
 import io
 import xml.etree.ElementTree as ET
-import requests
-import eclypse
 from zipfile import ZipFile, BadZipFile
+import eclypse
 
 
 def get_project(session, host):
@@ -11,25 +9,27 @@ def get_project(session, host):
     try:
         api_url = '/files/common/localDevice/project/Project.gfx?encode=bin'
         return eclypse.api_get(session, host, api_url).content
-    except:
-        return({'exception': 'Unknown Error'})
-
+    except Exception as e:
+        raise e
 
 def get_project_metadata(project):
     """Extract Main.xml project metadata from compressed project"""
     try: 
         zip_file = ZipFile(io.BytesIO(project))
-    except BadZipFile:
-        return({'exception': 'bad zip file'})
+    except BadZipFile as e:
+        raise e
 
     return zip_file.open("Main.xml")
 
 
-def get_project_name(session, host):
+def get_project_name_v1(session, host):
     """Retrieve project name from project metadata"""
-    project = get_project(session, host)
+    try:
+        project = get_project(session, host)
 
-    project_file = get_project_metadata(project)
+        project_file = get_project_metadata(project)
+    except Exception as e:
+        raise e
 
     tree = ET.parse(io.BytesIO(project_file.read()))
 
@@ -42,6 +42,49 @@ def get_project_name(session, host):
                     for name in props:
                         if name.tag == 'Name':
                             return name.text
+
+
+
+def get_project_v2(session, host):
+    """Get GFX name using V2 API"""
+    method = "/services/gfx/programs/1/project"
+
+    result = eclypse.api_get(session, host, method, version=2)
+    return result.json()
+
+
+def get_project_name_v2(session, host):
+    """Return the GFX Name"""
+    return get_project_v2(session, host)['name']
+
+
+def get_project_name(session, host, version=None):
+    """Return project name"""
+    # Attempts v1 and v2 API call for project name
+
+    # If provided, only try the specified API version
+    if version == 1:
+        return get_project_name_v1(session, host)
+    if version == 2:
+        return get_project_name_v2(session, host)
+
+    # We will attempt v1 and v2
+    # Lack of response is not an exception because we expect 1 call to fail
+
+    # Attempt v1 method
+    try:
+        return get_project_name_v1(session, host)
+    except Exception as e:
+        pass
+
+    # Attempt v2 method
+    try:
+        return get_project_name_v2(session, host)
+    except Exception as e:
+        pass
+
+    # If we didn't get an answer, raise a exception
+    raise Exception("API did not respond")
 
 
 def get_version_atrius(session, host):

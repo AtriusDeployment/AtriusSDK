@@ -1,26 +1,33 @@
+from requests import exceptions
 from requests_toolbelt.multipart.encoder import MultipartEncoder
 
 
-# V1 Resource Path
+# API Resource Paths
 V1_PATH = 'api/rest/v1'
+V2_PATH = 'api/rest/v2'
 
-# Base URL for the Eclypse API
-def api_base_url(hostname):
-    return f'https://{hostname}/{V1_PATH}'
+
+# Base URL for the Eclypse APIs
+def api_base_url(hostname, version=1):
+    if version == 1:
+        return f'https://{hostname}/{V1_PATH}'
+    if version == 2:
+        return f'https://{hostname}/{V2_PATH}'
 
 
 # REST methods
-def api_post(session, host, path, body):
+def api_post(session, host, path, body, version=1):
     """POST to API"""
-    url = f'{api_base_url(host)}{path}'
+    url = f'{api_base_url(host, version)}{path}'
     headers = {'Content-type': 'application/json'}
     result = session.post(url, json=body, headers=headers)
     result.raise_for_status()
     return result
 
-def api_get(session, host, path): # Throws requests error
+
+def api_get(session, host, path, version=1): # Throws requests error
     """GET from API"""
-    url = f'{api_base_url(host)}{path}'
+    url = f'{api_base_url(host, version)}{path}'
     headers = {'accept': 'application/json'}
 
     result = session.get(url, headers=headers, timeout=30)
@@ -31,6 +38,37 @@ def api_get(session, host, path): # Throws requests error
 def get_info_device(session, host):
     """Get ECLYPSE device information"""
     return api_get(session, host, '/info/device')
+
+
+def api_version(session, host):
+    """Returns the ECY API Version based on a successful call"""
+    headers = {'accept': 'application/json'}
+
+    try:
+        v1_url = f'{api_base_url(host, 1)}'
+        v1_result = session.get(v1_url, headers=headers, timeout=30)
+        if v1_result.ok:
+            return 1
+
+        v2_url = f'{api_base_url(host, 2)}/services'
+        v2_result = session.get(v2_url, headers=headers, timeout=30)
+        if v2_result.ok:
+            return 2
+    except exceptions.ConnectTimeout as e:
+        # Raise an exception if the specified host did not respond
+        raise e
+        
+
+
+def get_services_v1(session, host):
+    """Returns list of ECY 1 services"""
+    return api_get(session, host, '', version=1)
+
+
+def get_services_v2(session, host):
+    """Returns list of ECY 2 services"""
+    # Note: this list can change as packages extend the API
+    return api_get(session, host, '/services', version=2)
 
 
 # Hostname
