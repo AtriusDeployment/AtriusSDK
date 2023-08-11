@@ -60,3 +60,18 @@ If the report indicates that some ELCYPSE are still running old firmware, run th
 - eclypse_firmware_version.py - Create a report of current firmware versions
 - util.py - CLI input/output functions
 - example_host_list.csv - Demonstrates the format for the required ECLYPSE list
+- backup.py - Python module with functions for creating ECLYPSE backups
+- eclypse_backups.py - Print a list of available backups
+- eclypse_backup_create.py - Schedule a full backup on ECLYPSE
+- eclypse_backup_download.py - Download the latest backup from ECLYPSE
+- accounts.py - Python module for manipulating local ECLYPSE Users
+- eclypse_users.py - Print a list of local users on ECLYPSE
+- eclypse_user_add.py - Add a user to ECLYPSE
+- eclypse_user_set_password.py - Change a local ECLYPSE user's password
+- eclypse_user_delete.py - Delete a local ECLYPSE user by username
+- gfx.py - Python module for GFX
+- eclypse_gfx_version.py - Prints the name of the currently installed GFX
+- hl.py - Python module for manipulating a list of ECLYPSE 
+- host_list.py - Add or remove an ECLYPSE From a host list (for future container support)
+- terminal.cmd - A shortcut for Windows. Opens a terminal in the current directory and activates .venv if present
+
