@@ -34,6 +34,33 @@ def api_get(session, host, path, version=1): # Throws requests error
     result.raise_for_status()
     return result
 
+# Downloading files from a store requires a different header
+def api_get_store(session, host, path, version=1): # Throws requests error
+    """GET from API"""
+    url = f'{api_base_url(host, version)}{path}'
+    headers = { 'Accept': '*/*' }
+
+    result = session.get(url, headers=headers)
+    result.raise_for_status()
+    return result
+
+def api_put(session, host, path, body, version=1):
+    """PUT to API"""
+    url = f'{api_base_url(host, version)}{path}'
+    headers = {'Content-type': 'application/json'}
+    result = session.put(url, json=body, headers=headers)
+    result.raise_for_status()
+    return result
+
+
+def api_delete(session, host, path, version=1):
+    """Delete via API"""
+    url = f'{api_base_url(host, version)}{path}'
+    headers = {'Content-type': 'application/json'}
+    result = session.delete(url, headers=headers)
+    result.raise_for_status()
+    return result
+
 
 def get_info_device(session, host):
     """Get ECLYPSE device information"""
