@@ -25,6 +25,16 @@ def api_post(session, host, path, body, version=1):
     return result
 
 
+def api_post_store(session, host, path, body, version=2):
+    """POST a file to a v2 /store via API"""
+    url = f'{api_base_url(host, version)}{path}'
+    headers = {'Content-type': 'application/octet-stream'}
+    result = session.post(url, data=body, headers=headers)
+    result.raise_for_status()
+    return result
+
+
+
 def api_get(session, host, path, version=1): # Throws requests error
     """GET from API"""
     url = f'{api_base_url(host, version)}{path}'
