@@ -75,3 +75,10 @@ If the report indicates that some ELCYPSE are still running old firmware, run th
 - host_list.py - Add or remove an ECLYPSE From a host list (for future container support)
 - terminal.cmd - A shortcut for Windows. Opens a terminal in the current directory and activates .venv if present
 
+# Feedback
+
+Please take this short survey to let us know how we are doing.  We appreicate any feedback you can give us.
+
+https://www.surveymonkey.com/r/PKKRRCR
+
+
