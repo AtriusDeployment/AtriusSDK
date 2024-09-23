@@ -31,8 +31,9 @@ def gfx_version(site, api_version):
             # Call consolidated function
             # If specified, it will attempt to get the gfx name using the v1 or v2 API
             # If unknown, it will attempt both 
-            result = gfx.get_project_name(session, hostname, version=api_version)
-            return {'host': hostname,'version': result}
+            version = gfx.get_project_name(session, hostname, version=api_version)
+            lastModified = gfx.get_project_lastModified(session, hostname, version=api_version)
+            return {'host': hostname,'version': version, 'lastModified': lastModified}
         
         # Allow the run to continue when a single ECLYPSE returns an error
         except requests.exceptions.ConnectTimeout:
